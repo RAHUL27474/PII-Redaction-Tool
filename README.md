@@ -124,4 +124,53 @@ Each detection method runs in sequence, and results are deduplicated to avoid do
 - Integration with Presidio's annotator API for more accurate entity detection.
 - Support for additional PII types (passport numbers, driver's licenses, bank account numbers).
 - Web UI for reviewing and approving redactions before finalizing.
+
+## Flask Web Application
+
+The project can be deployed as a Flask web application on Render. The web UI provides a drag-and-drop upload form, processing progress indicator, and a one-click download for the redacted document.
+
+### Web Application Structure
+
+```
+project/
+├── app.py                         ← Flask application
+├── templates/
+│   └── index.html                 ← HTML template
+├── static/
+│   └── style.css                  ← Custom styles
+├── Procfile                       ← Render build config
+├── src/                           ← Existing redaction logic (unchanged)
+├── input/                         ← Temp upload directory
+├── output/                        ← Processed output directory
+├── mapping.json                   ← PII→fake mapping
+├── requirements.txt
+└── README.md
+```
+
+### Deployment on Render
+
+1. Push the project to a GitHub repository.
+2. Create a new **Web Service** on Render.
+3. Connect the repository.
+4. Configure the following settings:
+
+| Setting | Value |
+|---------|-------|
+| **Build Command** | `pip install -r requirements.txt` |
+| **Start Command** | `gunicorn app:app` |
+| **Python Version** | 3.10 or higher |
+
+5. Set the environment variable `SECRET_KEY` to a secure random value in Render's environment settings.
+6. Deploy.
+
+Render will automatically detect the `Procfile` and use the specified `web` process type. The application listens on `0.0.0.0` on the port provided by Render's `$PORT` environment variable.
+
+### Running Locally
+
+```bash
+pip install -r requirements.txt
+python app.py
+```
+
+The app runs at `http://localhost:5000`.
 # PII-Redaction-Tool
